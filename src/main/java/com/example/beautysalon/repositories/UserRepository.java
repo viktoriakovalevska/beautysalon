@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface UserRepository extends MongoRepository<User, Long> {
     User findByUsername(String username);
+    User findByPhone(String phone);
     List<User> findByBirthDay(Date birthDay);
 }

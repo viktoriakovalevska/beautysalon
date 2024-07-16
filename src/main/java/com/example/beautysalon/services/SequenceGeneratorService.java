@@ -1,6 +1,7 @@
 package com.example.beautysalon.services;
+
 import com.example.beautysalon.entities.Counter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -9,10 +10,10 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SequenceGeneratorService {
 
-    @Autowired
-    private MongoOperations mongoOperations;
+    final private MongoOperations mongoOperations;
 
     public long generateSequence(String seqName) {
         Query query = new Query(Criteria.where("_id").is(seqName));
