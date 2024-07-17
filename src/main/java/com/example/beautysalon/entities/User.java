@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
@@ -20,7 +20,6 @@ public class User {
     private String password;
     private Date birthDay;
     private Set<String> roles;
-    @CreatedDate
     private LocalDateTime createdAt;
     private String phone;
 

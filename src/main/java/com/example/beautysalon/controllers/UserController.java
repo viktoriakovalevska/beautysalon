@@ -6,8 +6,6 @@ import com.example.beautysalon.entities.User;
 import com.example.beautysalon.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +19,7 @@ public class UserController {
     private final SessionRepository<?> sessionRepository;
 
     @PostMapping("/register")
-    public UserDTO register(@RequestBody UserDTO userDTO) {
+    public UserDTO register(@RequestBody UserDTO userDTO) throws Exception{
         User user = User.builder()
                 .username(userDTO.getUsername())
                 .password(userDTO.getPassword())
@@ -31,16 +29,24 @@ public class UserController {
         return userService.saveUser(user);
     }
 
-    @GetMapping("/user/id/{id}")
-    public UserDTO findByUserID(@PathVariable(value = "id") Long id) {
+    @GetMapping("admin/user/id/{id}")
+    public UserDTO findByUserId(@PathVariable(value = "id") Long id) {
         return userService.findUserById(id);
     }
-    @PostMapping("/user/edit")
-    public UserDTO userEdit(@RequestBody UserDTO userDTO, HttpSession session) {
+    @GetMapping("admin/user/phone/{phone}")
+    public UserDTO findByUserPhone(@PathVariable(value = "phone") String phone) {
+        return userService.findUserByPhone(phone);
+    }
 
+    @PostMapping("/user/edit")
+    public UserDTO userEdit(@RequestBody UserDTO userDTO, HttpSession session) throws Exception{
         return userService.editUser((Long) session.getAttribute(CustomAuthenticationSuccessHandler.USER_ID), userDTO);
     }
 
+    @PostMapping("admin/user/id/{id}/edit")
+    public UserDTO editUserById(@PathVariable(value = "id") Long id, @RequestBody UserDTO userDTO) throws Exception{
+        return userService.editUser(id, userDTO);
+    }
 
 }
 
