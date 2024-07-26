@@ -1,9 +1,9 @@
 package com.example.beautysalon.services;
 
+import com.example.beautysalon.common.Role;
 import com.example.beautysalon.dto.UserDTO;
 import com.example.beautysalon.entities.User;
 import com.example.beautysalon.repositories.UserRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,8 @@ public class UserService {
     }
 
     public UserDTO findUserByPhone(String phone) {
-        return Optional.ofNullable(userRepository.findByPhone(phone)).map(UserDTO::new).orElse(new UserDTO());
+        return Optional.ofNullable(userRepository.findByPhone(phone)).map(UserDTO::new)
+                .orElse(new UserDTO());
     }
 
     private <T> T getIfChanged(T oldValue, T newValue) {
@@ -48,11 +49,16 @@ public class UserService {
 
     public UserDTO editUser(Long id, UserDTO userDTO) throws Exception{
         validateUniqueFields(userDTO.getUsername(), userDTO.getPhone());
-        User user = userRepository.findById(id).orElseThrow(() -> new NullPointerException(String.format("User with id {} not found", id)));
+        User user = getUser(id);
         user.setUsername(getIfChanged(user.getUsername(), userDTO.getUsername()));
         user.setBirthDay(getIfChanged(user.getBirthDay(), userDTO.getBirthDay()));
         user.setPhone(getIfChanged(user.getPhone(), userDTO.getPhone()));
         return new UserDTO(userRepository.save(user));
+    }
+
+    private User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NullPointerException(String.format("User with id %d not found", id)));
     }
 
     public void validateUniqueFields(String userName, String userPhone) throws Exception {
@@ -61,6 +67,16 @@ public class UserService {
         }
     }
 
+    public UserDTO setRoles(Long id, Set<Role> roles) throws Exception{
+        User user = getUser(id);
+        user.setRoles(roles);
+        return new UserDTO(userRepository.save(user));
+    }
+    public UserDTO removeUser(Long id) throws Exception{
+        UserDTO userDTO = new UserDTO(getUser(id));
+        userRepository.deleteById(id);
+        return userDTO;
+    }
 
 }
 

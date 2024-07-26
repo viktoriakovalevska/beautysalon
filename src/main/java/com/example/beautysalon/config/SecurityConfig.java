@@ -1,11 +1,15 @@
 package com.example.beautysalon.config;
 
+import com.example.beautysalon.common.Role;
 import com.example.beautysalon.entities.User;
 import com.example.beautysalon.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Optional;
 import java.util.Set;
@@ -22,9 +27,9 @@ import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
-    @Autowired
-    private UserRepository userRepository;
+@RequiredArgsConstructor
+public class SecurityConfig{
+    private final UserRepository userRepository;
 
 
     @PostConstruct
@@ -34,7 +39,7 @@ public class SecurityConfig {
             User user = User.builder()
                     .username(userName)
                     .password("$2a$10$v4s7GS0y/CZBW2C0af2On.QfwOaI7pwrd2XFN97HRuB.S/vPSOmUG")
-                    .roles(Set.of("ADMIN", "USER"))
+                    .roles(Set.of(Role.ADMIN, Role.USER))
                     .build();
             userRepository.save(user);
         }
@@ -44,13 +49,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/register", "/login", "/error").permitAll()
+                        .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/user/**").hasRole(Role.USER.name())
+                        .requestMatchers("/register", "/login", "/error", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
-                        .successHandler(new CustomAuthenticationSuccessHandler(userRepository))
+//                        .successHandler(new AuthenticationService(userRepository))
                         .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
@@ -71,7 +76,11 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
                     .password(user.getPassword())
-                    .authorities(user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role)).collect(Collectors.toList()))
+                    .authorities(user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toList()))
+                    .accountExpired(false)
+                    .accountLocked(false)
+                    .credentialsExpired(false)
+                    .disabled(false)
                     .build();
         };
     }
@@ -81,4 +90,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 }
