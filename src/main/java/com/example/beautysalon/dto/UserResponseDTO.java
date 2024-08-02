@@ -2,6 +2,8 @@ package com.example.beautysalon.dto;
 
 import com.example.beautysalon.common.Role;
 import com.example.beautysalon.entities.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,23 +16,27 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserResponseDTO {
 
     private long id;
     private String username;
-    private String password;
     private String phone;
     private Date birthDay;
     private Set<Role> roles;
 
-    public UserDTO(User user){
+    public UserResponseDTO(User user){
         this.id = user.getId();
         this.username = user.getUsername();
-        this.password = user.getPassword();
         this.birthDay = user.getBirthDay();
         this.phone = user.getPhone();
         this.roles = user.getRoles();
     }
 
+    public UserResponseDTO(UserRequestDTO user){
+        this.username = user.getUsername();
+        this.birthDay = user.getBirthDay();
+        this.phone = user.getPhone();
+        this.roles = user.getRoles();
+    }
 
 }

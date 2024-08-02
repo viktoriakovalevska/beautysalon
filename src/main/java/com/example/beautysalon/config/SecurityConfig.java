@@ -5,10 +5,10 @@ import com.example.beautysalon.entities.User;
 import com.example.beautysalon.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,7 +19,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Optional;
 import java.util.Set;
@@ -54,11 +53,7 @@ public class SecurityConfig{
                         .requestMatchers("/register", "/login", "/error", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(formLogin -> formLogin
-//                        .successHandler(new AuthenticationService(userRepository))
-                        .defaultSuccessUrl("/home", true)
-                        .permitAll()
-                )
+
                 .logout(logout -> logout
                         .permitAll()
                 );
@@ -71,7 +66,7 @@ public class SecurityConfig{
         return username -> {
             User user = Optional.ofNullable(userRepository.findByUsername(username)).orElse(userRepository.findByPhone(username));
             if (user == null) {
-                throw new UsernameNotFoundException("UserDTO not found");
+                throw new UsernameNotFoundException("UserResponseDTO not found");
             }
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
@@ -91,7 +86,7 @@ public class SecurityConfig{
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 }
