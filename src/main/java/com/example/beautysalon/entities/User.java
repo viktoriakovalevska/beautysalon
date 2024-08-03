@@ -19,7 +19,6 @@ public class User {
     private String password;
     private Date birthDay;
     private Set<Role> roles;
-    private LocalDateTime createdAt;
     private String phone;
 
 

@@ -65,7 +65,7 @@ public class UserService {
         return new UserResponseDTO(userRepository.save(user));
     }
 
-    private User getUser(Long id) {
+    public User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NullPointerException(String.format("User with id %d not found", id)));
     }

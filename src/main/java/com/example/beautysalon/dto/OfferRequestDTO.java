@@ -8,5 +8,5 @@ import java.time.Duration;
 public class OfferRequestDTO {
 
     private String name;
-    private Integer period;
+    private Long period;
 }

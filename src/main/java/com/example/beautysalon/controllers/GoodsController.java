@@ -7,6 +7,8 @@ import com.example.beautysalon.services.GoodsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class GoodsController {
@@ -26,6 +28,12 @@ public class GoodsController {
     public Response<GoodsResponseDTO> goodsAdd(@RequestBody GoodsRequestDTO registrDTO) throws Exception {
         return Response.createSuccessfulResponseEntity(goodsService.addGoods(registrDTO));
     }
+
+    @GetMapping("admin/goods/get/name")
+    public Response<List<GoodsResponseDTO>> findGoodsByPartName (@RequestParam(value = "partname") String partName) {
+        return  Response.createSuccessfulResponseEntity(goodsService.getGoodsByPartName(partName));
+    }
+
     @DeleteMapping("admin/goods/id/{id}/delete")
     public Response<GoodsResponseDTO> removeGoods(@PathVariable(value = "id") Long id) throws Exception {
         return Response.createSuccessfulResponseEntity(goodsService.removeGoods(id));

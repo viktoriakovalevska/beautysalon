@@ -15,11 +15,11 @@ import java.time.Duration;
 public class OfferResponseDTO {
     private String id;
     private String name;
-    private Integer period;
+    private Long period;
     public OfferResponseDTO(Offer offer){
         this.id = offer.getId();
         this.name =offer.getName();
-        this.period = Math.toIntExact(offer.getPeriod().getSeconds())/60;
+        this.period = offer.getPeriod().toMinutes();
     }
 }
 

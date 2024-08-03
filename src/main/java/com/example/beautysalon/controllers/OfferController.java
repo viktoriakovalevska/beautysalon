@@ -29,7 +29,7 @@ public class OfferController {
         return Response.createSuccessfulResponseEntity(offerService.findOfferById(id));
     }
 
-    @GetMapping("admin/offer/get/name")
+    @GetMapping("admin/offers/get/name")
     public Response<List<OfferResponseDTO>> findOfferByPartName(@RequestParam(value = "partname") String partName) {
         return Response.createSuccessfulResponseEntity(offerService.getOfferByPartName(partName));
     }

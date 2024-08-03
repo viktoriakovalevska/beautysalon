@@ -5,7 +5,6 @@ import com.example.beautysalon.common.Response;
 import com.example.beautysalon.common.Role;
 import com.example.beautysalon.dto.UserRequestDTO;
 import com.example.beautysalon.dto.UserResponseDTO;
-import com.example.beautysalon.entities.User;
 import com.example.beautysalon.services.AuthenticationService;
 import com.example.beautysalon.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -24,7 +23,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserController {
 
-    final private UserService userService;
+    private final UserService userService;
     private final SessionRepository<?> sessionRepository;
     private final AuthenticationService authenticationService;
 
